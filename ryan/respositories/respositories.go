@@ -2,11 +2,11 @@ package respositories
 
 import (
 	"database/sql"
-
 	"ryan/app"
+	"ryan/util/crypto"
 )
 
-//GETUSERBYEMAIL gets s user by email
+//GetUserByEmail gets s user by email
 func GetUserByEmail(db *sql.DB, email string) (*app.User, error) {
 	const sqlstr = `
 	select 
@@ -19,11 +19,11 @@ func GetUserByEmail(db *sql.DB, email string) (*app.User, error) {
 	where email = :p1
 	`
 	var user app.User
-	err := db.QueryRow(sqlstr, email).Scan(&user.First_name, &user.Last_name, &user.Email, &user.Password, &user.Salt)
+	err := db.QueryRow(sqlstr, email).Scan(&user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Salt)
 	return &user, err
 }
 
-//AddUserTodatabase creates a new user
+//AddUserToDatabase creates a new user
 func AddUserToDatabase(db *sql.DB, firstName, lastName, email, password string) error {
 	const sqlstr = `
 	insert into users (
@@ -42,13 +42,17 @@ func AddUserToDatabase(db *sql.DB, firstName, lastName, email, password string) 
 	`
 	salt := crypto.GenerateSalt()
 	hashedPassword := crypto.HashPassword(password, salt)
-	err := db.QueryRow(sqlstr, firstName, lastName, email, hashedPassword, salt)
+	_, err := db.Exec(sqlstr, firstName, lastName, email, hashedPassword, salt)
 	return err
 }
 
+//CheckEmailExists is a function
 func CheckEmailExists(db *sql.DB, email string) (bool, error) {
-	const sqlstr = "select exists(select 1 from users where email= :p1)"
-	var exists bool
+	const sqlstr = "select email from users where email=:p1"
+	var exists string
 	err := db.QueryRow(sqlstr, email).Scan(&exists)
-	return exists, err
+	if exists == "" {
+		return false, nil
+	}
+	return true, err
 }

@@ -29,9 +29,6 @@ var User = MediaType("application/vnd.user+json", func() {
 		Attribute("first_name", String, "First name of the user", func() {
 			Example("John")
 		})
-		Attribute("first_name", String, "First name of the user", func() {
-			Example("John")
-		})
 		Attribute("last_name", String, "Last name of the user", func() {
 			Example("Snow")
 		})

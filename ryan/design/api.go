@@ -12,7 +12,7 @@ var _ = API("Authentication API", func() {
 		Name("Tester Test")
 		Email("test@tester.com")
 	})
-	Host("localhost:8080")
+	Host("localhost:8000")
 	Scheme("http")
 	BasePath("/api/")
 	Origin("*", func() {
